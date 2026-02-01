@@ -1,3 +1,9 @@
+ -- ============================================================================================================================
+-- Copyright 2026 Johnson Controls Tyco IP Holdings LLP. All rights reserved.
+-- This software constitutes the confidential and proprietary information and
+-- intellectual property of Johnson Controls.
+-- ============================================================================================================================
+
  --JCIHistorianDB/DDLScripts/JCIHistorianDBUsers-ars.sql
  DECLARE @sql nvarchar(max)
 DECLARE @Schema nvarchar(128)
@@ -14,8 +20,30 @@ END
 GO
 
 /****** Object:  User [g3-MetasysReportServer]    Script Date: 03/23/2015 08:41:28 ******/
-IF EXISTS (SELECT * from sys.sql_logins WHERE name = 'g3-MetasysReportServer')
-  AND NOT EXISTS (SELECT * from sys.sysusers WHERE name = 'g3-MetasysReportServer')
-    CREATE USER [g3-MetasysReportServer] FOR LOGIN [g3-MetasysReportServer] WITH DEFAULT_SCHEMA=[dbo]
 
-ALTER USER [g3-MetasysReportServer] WITH LOGIN = [g3-MetasysReportServer]	
+IF EXISTS (SELECT * FROM sys.sysusers WHERE name = 'g3-MetasysReportServer')
+    DROP USER [g3-MetasysReportServer]
+GO
+
+IF (SELECT SERVERPROPERTY('babelfishversion')) IS NULL 
+BEGIN
+    IF EXISTS (SELECT * FROM sys.sql_logins WHERE name = 'g3-MetasysReportServer')
+       AND NOT EXISTS (SELECT * FROM sys.sysusers WHERE name = 'g3-MetasysReportServer')
+        CREATE USER [g3-MetasysReportServer] FOR LOGIN [g3-MetasysReportServer] WITH DEFAULT_SCHEMA = [dbo]
+
+    
+    ALTER USER [g3-MetasysReportServer] WITH LOGIN = [g3-MetasysReportServer]
+END
+ELSE 
+BEGIN
+    IF EXISTS (SELECT * FROM sys.server_principals WHERE name = 'g3-MetasysReportServer')
+       AND NOT EXISTS (SELECT * FROM sys.sysusers WHERE name = 'g3-MetasysReportServer')
+        CREATE USER [g3-MetasysReportServer] FOR LOGIN [g3-MetasysReportServer] WITH DEFAULT_SCHEMA = [dbo]
+
+    
+    ALTER USER [g3-MetasysReportServer] WITH LOGIN = [g3-MetasysReportServer]
+END
+
+
+
+
